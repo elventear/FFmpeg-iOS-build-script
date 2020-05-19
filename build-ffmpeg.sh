@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # directories
-FF_VERSION="4.2"
+FF_VERSION="4.2.2"
 #FF_VERSION="snapshot-git"
 if [[ $FFMPEG_VERSION != "" ]]; then
   FF_VERSION=$FFMPEG_VERSION
@@ -33,6 +33,8 @@ fi
 
 # avresample
 #CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-avresample"
+
+CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-encoder=libmp3lame --enable-decoder=mp3 --enable-demuxer=mp3 --enable-muxer=mp3 --enable-libmp3lame --disable-avfilter --disable-postproc --disable-swscale --disable-swresample --disable-avdevice --disable-network"
 
 ARCHS="arm64 armv7 x86_64 i386"
 
@@ -94,7 +96,7 @@ then
 		mkdir -p "$SCRATCH/$ARCH"
 		cd "$SCRATCH/$ARCH"
 
-		CFLAGS="-arch $ARCH"
+		CFLAGS="-arch $ARCH $CFLAGS"
 		if [ "$ARCH" = "i386" -o "$ARCH" = "x86_64" ]
 		then
 		    PLATFORM="iPhoneSimulator"
@@ -120,7 +122,7 @@ then
 		fi
 
 		CXXFLAGS="$CFLAGS"
-		LDFLAGS="$CFLAGS"
+		LDFLAGS="$CFLAGS $LDFLAGS"
 		if [ "$X264" ]
 		then
 			CFLAGS="$CFLAGS -I$X264/include"
@@ -143,7 +145,7 @@ then
 		    --prefix="$THIN/$ARCH" \
 		|| exit 1
 
-		make -j3 install $EXPORT || exit 1
+		make -j12 install $EXPORT || exit 1
 		cd $CWD
 	done
 fi
